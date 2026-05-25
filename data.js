@@ -383,6 +383,60 @@ const fortressSedes = [
     googleMaps: "https://maps.google.com/?q=-31.639704,-60.684899",
     image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80",
     description: "Propuesta gastronómica multifacética del Grupo Fortress sobre el Boulevard Gálvez, a pasos del Puente Oroño. Opera de mañana a madrugada como cafetería, restaurante y bar de cócteles. Cocina Nikkei (fusión japonesa-peruana) en ambiente sofisticado."
+  },
+  {
+    id: 15,
+    name: "Fortress - Sede Tucumán",
+    brand: "fortress",
+    coords: [-31.6454256, -60.7128748],
+    address: "Tucumán 3087, Santa Fe, Santa Fe",
+    phone: "+54 9 342 626-5832",
+    whatsapp: "https://wa.me/5493426265832",
+    schedule: "Lun–Vie 06:00–22:00 · Sáb 09:00–20:00 · Dom 16:00–20:00",
+    stats: {
+      socios: "800+",
+      superficie: "Amplio",
+      especial: "Zona Sur"
+    },
+    services: [
+      "Musculación",
+      "Entrenamiento Funcional",
+      "Clases Grupales",
+      "Aire Acondicionado"
+    ],
+    instagram: "https://www.instagram.com/fortress.training.club/",
+    facebook: "https://www.facebook.com/fortressoficial/",
+    web: "https://fortressclub.com.ar",
+    wellhub: "",
+    googleMaps: "https://maps.google.com/?q=-31.6454256,-60.7128748",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=600&q=80",
+    description: "Sede sobre calle Tucumán en la zona sur de Santa Fe, con calificación de 4.6 estrellas y más de 113 reseñas. Equipamiento moderno, espacio amplio y climatizado. Horario extendido incluyendo domingos por la tarde."
+  },
+  {
+    id: 16,
+    name: "Krafit - Boulevard",
+    brand: "krafit",
+    coords: [-31.639627, -60.6850543],
+    address: "Blvd. Gálvez, Santa Fe, Santa Fe (S3002)",
+    phone: "",
+    whatsapp: "",
+    schedule: "Lun–Vie 06:00–22:00 · Sáb 09:00–20:00 · Dom cerrado",
+    stats: {
+      socios: "Nuevo",
+      superficie: "Compacto",
+      especial: "Boulevard"
+    },
+    services: [
+      "Musculación",
+      "Funcional",
+      "Fitness"
+    ],
+    instagram: "https://www.instagram.com/krafit.center/",
+    web: "http://krafitcenter.com",
+    wellhub: "",
+    googleMaps: "https://maps.google.com/?q=-31.639627,-60.6850543",
+    image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=600&q=80",
+    description: "Sede de Krafit sobre el emblemático Boulevard Gálvez. Espacio compacto pero con atención personalizada de instructores y buena variedad de máquinas. Calificación de 4.4 estrellas."
   }
 ];
 
