@@ -563,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (geoBtn) {
     geoBtn.addEventListener("click", () => {
       if (!navigator.geolocation) {
-        alert("La geolocalización no está soportada por tu navegador.");
+        showToast("La geolocalización no está soportada por tu navegador.", "error");
         return;
       }
 
@@ -603,7 +603,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             setTimeout(() => {
               focusOnSede(closestSede);
-              alert(`Geolocalizado con éxito. La sede más cercana es: ${closestSede.name}`);
+              showToast(`¡Ubicación activada! Sede más cercana: ${closestSede.name}`, "success");
               
               // Remover indicador de pulso en 8 segundos
               setTimeout(() => {
@@ -617,15 +617,15 @@ document.addEventListener("DOMContentLoaded", () => {
           geoBtn.classList.remove("loading");
           let errorMsg = "No pudimos obtener tu ubicación actual.";
           if (error.code === error.PERMISSION_DENIED) {
-            errorMsg += " El acceso a la ubicación fue denegado. Por favor, habilita los permisos de GPS/ubicación en tu navegador para esta página.";
+            errorMsg += " El acceso fue denegado. Activa los permisos de GPS en tu navegador.";
           } else if (error.code === error.POSITION_UNAVAILABLE) {
-            errorMsg += " Tu GPS o señal de red no está disponible actualmente.";
+            errorMsg += " Señal de GPS no disponible actualmente.";
           } else if (error.code === error.TIMEOUT) {
             errorMsg += " Se agotó el tiempo de espera. Inténtalo de nuevo.";
           }
-          alert(errorMsg);
+          showToast(errorMsg, "error");
         },
-        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     });
   }
@@ -728,6 +728,35 @@ document.addEventListener("DOMContentLoaded", () => {
   function truncateText(text, limit) {
     if (text.length <= limit) return text;
     return text.slice(0, limit) + "...";
+  }
+
+  function showToast(message, type = "info") {
+    // Eliminar toast anterior si existe
+    const existing = document.querySelector(".custom-toast");
+    if (existing) existing.remove();
+    
+    const toast = document.createElement("div");
+    toast.className = `custom-toast ${type}`;
+    
+    let icon = "⚡";
+    if (type === "success") icon = "✅";
+    if (type === "error") icon = "❌";
+    
+    toast.innerHTML = `
+      <span class="toast-icon">${icon}</span>
+      <span class="toast-message">${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Forzar reflow y animar entrada
+    setTimeout(() => toast.classList.add("show"), 50);
+    
+    // Auto-remover en 4.5 segundos
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 400);
+    }, 4500);
   }
 
 

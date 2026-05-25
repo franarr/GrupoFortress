@@ -1333,3 +1333,62 @@ body, html {
     font-size: 0.6rem;
   }
 }
+
+/* ==========================================================================
+   10. NOTIFICACIONES FLOTANTES PREMIUM (CUSTOM TOAST ALERTS)
+   ========================================================================== */
+.custom-toast {
+  position: fixed;
+  top: 90px; /* Posicionada elegantemente arriba, debajo del buscador flotante */
+  left: 50%;
+  transform: translate(-50%, -20px);
+  background: rgba(11, 12, 16, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--color-primary);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+  width: 90%;
+  max-width: 380px;
+}
+
+.custom-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.custom-toast.success {
+  border-left-color: #4CAF50; /* Verde Éxito */
+}
+
+.custom-toast.error {
+  border-left-color: var(--color-valhalla); /* Naranja-Rojo Error */
+}
+
+.custom-toast.info {
+  border-left-color: #EA531D; /* Naranja Fortress */
+}
+
+.toast-icon {
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-message {
+  line-height: 1.35;
+}
+
