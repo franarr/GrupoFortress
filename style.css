@@ -1,0 +1,1335 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO Y CONFIGURACIÓN PREMIUM - GRUPO FORTRESS
+   ========================================================================== */
+
+:root {
+  /* Colores Corporativos */
+  --color-primary: #FFB300;     /* Amarillo-Naranja Fortress */
+  --color-primary-glow: rgba(255, 179, 0, 0.4);
+  --color-krafit: #FDD835;      /* Amarillo Krafit */
+  --color-valhalla: #BF360C;    /* Naranja-Rojo Nórdico */
+  --color-wasabi: #1B5E20;      /* Verde Wasabi */
+  --color-polpo: #4A148C;       /* Púrpura Polpo Nero */
+  --color-servicios: #00838F;   /* Turquesa Éter / Rokiroll / Store */
+
+  /* Colores del Sistema (Tema por Defecto: Oscuro Premium) */
+  --bg-color: #0b0c10;
+  --bg-color-translucent: rgba(11, 12, 16, 0.75);
+  --bg-card: #1f2833;
+  --bg-card-hover: #2d3748;
+  --text-primary: #ffffff;
+  --text-secondary: #c5a880;
+  --text-muted: #8a99ad;
+  --border-color: rgba(197, 168, 128, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --blur-filter: blur(16px);
+  --border-accent: rgba(255, 255, 255, 0.08);
+
+  /* Fuentes */
+  --font-titles: 'Syne', 'Outfit', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+
+  /* Transiciones */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Variables para el Tema Claro */
+body.light-theme {
+  --bg-color: #f4f6f9;
+  --bg-color-translucent: rgba(244, 246, 249, 0.85);
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f3f5;
+  --text-primary: #1a1e24;
+  --text-secondary: #a9824f;
+  --text-muted: #616e7f;
+  --border-color: rgba(169, 130, 79, 0.25);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --border-accent: rgba(0, 0, 0, 0.05);
+}
+
+/* Reset de Estilos */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+/* ==========================================================================
+   1. PANTALLA DE CARGA (SPLASH SCREEN)
+   ========================================================================== */
+
+#splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #1c1d24 0%, #08090c 100%);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+}
+
+#splash-screen.fade-out {
+  opacity: 0;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+.splash-content {
+  text-align: center;
+  max-width: 420px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-logo-svg {
+  filter: drop-shadow(0 0 15px var(--color-primary-glow));
+  margin-bottom: 25px;
+  transform: scale(1);
+  animation: pulseLogo 2s infinite ease-in-out;
+}
+
+.ray-path {
+  fill: none;
+  stroke: #EA531D;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: drawStroke 2.5s forwards ease-in-out;
+}
+
+.splash-title {
+  font-family: var(--font-titles);
+  font-size: 2rem;
+  letter-spacing: 4px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.splash-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  line-height: 1.4;
+  margin-bottom: 30px;
+}
+
+.splash-loader {
+  width: 180px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loader-progress {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  position: absolute;
+  left: -100%;
+  animation: loadingProgress 1.8s infinite ease-in-out;
+}
+
+@keyframes drawStroke {
+  to {
+    stroke-dashoffset: 0;
+    fill: #EA531D;
+    stroke-width: 1;
+  }
+}
+
+@keyframes pulseLogo {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes loadingProgress {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ==========================================================================
+   2. CONTENEDOR DEL MAPA Y PERSONALIZACIÓN DE LEAFLET
+   ========================================================================== */
+
+#map {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Quitar atribución fea por defecto y recolocar controles */
+.leaflet-control-zoom {
+  display: none !important; /* Usamos nuestros propios controles premium */
+}
+
+.leaflet-control-attribution {
+  font-size: 8px !important;
+  background: var(--bg-color-translucent) !important;
+  color: var(--text-muted) !important;
+  border-radius: 4px 0 0 0;
+  backdrop-filter: var(--blur-filter);
+  border: 1px solid var(--border-color);
+  border-right: none;
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   3. BARRA DE BÚSQUEDA Y FILTROS FLOTANTES (SUPERIOR)
+   ========================================================================== */
+
+.floating-header {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 480px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  align-items: center;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: var(--bg-color-translucent);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 6px 14px 6px 6px;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  backdrop-filter: var(--blur-filter);
+  pointer-events: auto;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.search-container:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 30px rgba(255, 179, 0, 0.15);
+}
+
+.search-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.search-logo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.03);
+}
+
+.search-logo-svg {
+  transition: transform var(--transition-smooth);
+}
+
+.search-logo:hover .search-logo-svg {
+  transform: rotate(-10deg) scale(1.05);
+}
+
+#search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 15px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+#search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.clear-search {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.clear-search:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Filtros Flotantes Compactos y Distribuidos en Cuadrícula */
+.filters-scroll {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.filter-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 2px;
+  border-radius: 12px;
+  background: var(--bg-color-translucent);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px var(--shadow-color);
+  backdrop-filter: var(--blur-filter);
+  transition: all var(--transition-fast);
+}
+
+.filter-pill:hover {
+  background: var(--bg-card);
+  transform: translateY(-1px);
+}
+
+.filter-pill.active {
+  background: var(--color-primary);
+  color: #0b0c10;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 15px var(--color-primary-glow);
+}
+
+.pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.fortress-dot { background: #EA531D; }
+.krafit-dot { background: var(--color-krafit); }
+.valhalla-dot { background: var(--color-valhalla); }
+.gastro-dot { background: var(--color-wasabi); }
+
+/* ==========================================================================
+   4. CONTROLES FLOTANTES LATERAL DERECHA
+   ========================================================================== */
+
+.floating-controls {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--bg-color-translucent);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 25px var(--shadow-color);
+  backdrop-filter: var(--blur-filter);
+  transition: all var(--transition-fast);
+}
+
+.control-btn:hover {
+  transform: scale(1.05) translateY(-2px);
+  background: var(--bg-card);
+}
+
+.control-btn.accent {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #0b0c10;
+  box-shadow: 0 8px 25px rgba(255, 179, 0, 0.35);
+}
+
+.control-btn.accent:hover {
+  background: #ffa000;
+  box-shadow: 0 8px 25px rgba(255, 179, 0, 0.5);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--color-valhalla);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--bg-color);
+}
+
+/* ==========================================================================
+   5. PANELES LATERALES (DRAWER PANELS)
+   ========================================================================== */
+
+.side-panel {
+  position: fixed;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-color-translucent);
+  border-left: 1px solid var(--border-color);
+  z-index: 1000;
+  backdrop-filter: var(--blur-filter);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.side-panel.left-side {
+  left: 0;
+  border-left: none;
+  border-right: 1px solid var(--border-color);
+  transform: translateX(-100%);
+}
+
+.side-panel.left-side.open {
+  transform: translateX(0);
+}
+
+.side-panel.right-side {
+  right: 0;
+  transform: translateX(100%);
+}
+
+.side-panel.right-side.open {
+  transform: translateX(0);
+}
+
+.panel-header {
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-accent);
+}
+
+.panel-title {
+  font-family: var(--font-titles);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.close-panel-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.close-panel-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ecosistema-intro {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.ecosistema-section h3 {
+  font-family: var(--font-titles);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.ecosistema-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Tarjetas del Ecosistema */
+.eco-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.eco-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color);
+  transform: translateY(-2px);
+}
+
+.eco-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.eco-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.eco-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.eco-card-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Colores Dinámicos Ecosistema */
+.eco-fortress { border-left: 3px solid #EA531D; }
+.eco-fortress .eco-icon-wrapper { background: rgba(234, 83, 29, 0.15); color: #EA531D; }
+
+.eco-krafit { border-left: 3px solid var(--color-krafit); }
+.eco-krafit .eco-icon-wrapper { background: rgba(253, 216, 53, 0.15); color: var(--color-krafit); }
+
+.eco-valhalla { border-left: 3px solid var(--color-valhalla); }
+.eco-valhalla .eco-icon-wrapper { background: rgba(191, 54, 12, 0.15); color: var(--color-valhalla); }
+
+.eco-wasabi { border-left: 3px solid var(--color-wasabi); }
+.eco-wasabi .eco-icon-wrapper { background: rgba(27, 94, 32, 0.15); color: var(--color-wasabi); }
+
+.eco-polpo { border-left: 3px solid var(--color-polpo); }
+.eco-polpo .eco-icon-wrapper { background: rgba(74, 20, 140, 0.15); color: var(--color-polpo); }
+
+.eco-servicios-style { border-left: 3px solid var(--color-servicios); }
+.eco-servicios-style .eco-icon-wrapper { background: rgba(0, 131, 143, 0.15); color: var(--color-servicios); }
+
+/* Tarjetas de Notificación */
+.notification-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: 16px;
+  padding: 16px;
+  gap: 10px;
+  transition: all var(--transition-fast);
+}
+
+.notification-card:hover {
+  border-color: var(--border-color);
+}
+
+.noti-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.noti-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-new { background: rgba(255, 179, 0, 0.15); color: var(--color-primary); }
+.badge-opening { background: rgba(191, 54, 12, 0.15); color: var(--color-valhalla); }
+.badge-promo { background: rgba(27, 94, 32, 0.15); color: var(--color-wasabi); }
+
+.noti-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.noti-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.noti-action-btn {
+  align-self: flex-start;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.noti-action-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-primary);
+}
+
+/* ==========================================================================
+   6. CONTADORES ANIMADOS Y TIMELINE DE EXPANSIÓN (INFERIOR)
+   ========================================================================== */
+
+.bottom-expanded-bar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(100% - 30px)); /* Parcialmente colapsado */
+  width: 90%;
+  max-width: 950px;
+  background: var(--bg-color-translucent);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -10px 40px var(--shadow-color);
+  backdrop-filter: var(--blur-filter);
+  z-index: 500;
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-expanded-bar.open {
+  transform: translateX(-50%) translateY(0);
+}
+
+.bottom-expanded-bar.hidden {
+  transform: translateX(-50%) translateY(100%) !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.timeline-toggle-handle {
+  width: 100%;
+  height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+}
+
+.handle-line {
+  width: 40px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  transition: background var(--transition-fast);
+}
+
+.timeline-toggle-handle:hover .handle-line {
+  background: var(--text-secondary);
+}
+
+.bottom-bar-layout {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 210px; /* Reducida la altura para que no sea gigante al abrirse */
+  overflow-y: auto;
+}
+
+/* Contenedor de Estadísticas */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  padding: 8px 12px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: var(--font-titles);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 1px;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* Control del Slider del Timeline */
+.timeline-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline-section-title {
+  font-family: var(--font-titles);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.timeline-wrapper {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+  padding-bottom: 10px;
+}
+
+.timeline-wrapper::-webkit-scrollbar {
+  height: 4px;
+}
+
+.timeline-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.timeline-track {
+  display: flex;
+  gap: 20px;
+  padding: 5px 0;
+  min-width: max-content;
+}
+
+.timeline-node {
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  border-left: 2px solid var(--border-color);
+  padding-left: 12px;
+}
+
+.timeline-node:hover {
+  border-left-color: var(--color-primary);
+}
+
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.timeline-node:hover::before {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-primary-glow);
+}
+
+.timeline-year {
+  font-family: var(--font-titles);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.timeline-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.timeline-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   7. POPUPS PERSONALIZADOS DE LEAFLET (ESTILO AIRBNB / PREMIUM)
+   ========================================================================== */
+
+.leaflet-popup-content-wrapper {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-radius: 20px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 15px 40px var(--shadow-color) !important;
+  border: 1px solid var(--border-color) !important;
+  backdrop-filter: var(--blur-filter) !important;
+  width: 290px !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: 100% !important;
+  font-family: var(--font-body) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: none !important;
+}
+
+/* Contenido del Popup */
+.popup-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.popup-img-wrapper {
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+}
+
+.popup-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-smooth);
+}
+
+.popup-card:hover .popup-img {
+  transform: scale(1.05);
+}
+
+.popup-brand-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  background: rgba(11, 12, 16, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.popup-brand-badge svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.popup-brand-badge.fortress { border-color: #EA531D; }
+.popup-brand-badge.krafit { border-color: var(--color-krafit); }
+.popup-brand-badge.valhalla { border-color: var(--color-valhalla); }
+.popup-brand-badge.wasabi { border-color: var(--color-wasabi); }
+.popup-brand-badge.polponero { border-color: var(--color-polpo); }
+
+.popup-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.popup-title {
+  font-family: var(--font-titles);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.popup-address {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.popup-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.read-more-btn {
+  color: var(--color-primary);
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 4px;
+  text-decoration: underline;
+  display: inline-block;
+  transition: color var(--transition-fast);
+}
+
+.read-more-btn:hover {
+  color: #ffffff;
+}
+
+/* Ficha de Detalles Estadísticos */
+.popup-stats-grid {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--border-accent);
+  border-bottom: 1px solid var(--border-accent);
+  padding: 8px 0;
+}
+
+.popup-stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.popup-stat-val {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.popup-stat-lbl {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.popup-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.popup-service-tag {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--border-accent);
+  color: var(--text-muted);
+}
+
+.popup-schedule {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-accent);
+}
+
+/* Botones de Acción Popups */
+.popup-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.popup-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.popup-btn.primary {
+  background: var(--text-primary);
+  color: var(--bg-color);
+  border: none;
+}
+
+.popup-btn.primary:hover {
+  background: var(--color-primary);
+  color: #0b0c10;
+  box-shadow: 0 4px 12px var(--color-primary-glow);
+}
+
+.popup-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.popup-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-primary);
+}
+
+/* Quitar botón por defecto feo de Leaflet */
+.leaflet-container a.leaflet-popup-close-button {
+  width: 28px !important;
+  height: 28px !important;
+  font-size: 20px !important;
+  color: #ffffff !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 50% !important;
+  top: 10px !important;
+  right: 10px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ==========================================================================
+   8. DISEÑO DE PINES VECTORIALES EXCLUSIVOS (CUSTOM LEAFLET ICON)
+   ========================================================================== */
+
+.custom-marker-pin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  position: relative;
+}
+
+.pin-ring-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  transform: scale(0.85);
+  transition: all var(--transition-fast);
+}
+
+.pin-main {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  border: 2px solid #ffffff;
+  transition: transform var(--transition-fast);
+}
+
+/* Estados de Hover de Pines */
+.custom-marker-pin:hover .pin-main {
+  transform: scale(1.15);
+}
+
+.custom-marker-pin:hover .pin-ring-glow {
+  transform: scale(1.2);
+  opacity: 0.5;
+}
+
+/* Colores específicos de Pines */
+.marker-fortress .pin-main { background: #121212; border-color: #EA531D; color: #EA531D; }
+.marker-fortress .pin-ring-glow { background: #EA531D; }
+
+.marker-krafit .pin-main { background: #121212; border-color: var(--color-krafit); color: var(--color-krafit); }
+.marker-krafit .pin-ring-glow { background: var(--color-krafit); }
+
+.marker-valhalla .pin-main { background: #121212; border-color: var(--color-valhalla); color: var(--color-valhalla); }
+.marker-valhalla .pin-ring-glow { background: var(--color-valhalla); }
+
+.marker-wasabi .pin-main { background: #121212; border-color: var(--color-wasabi); color: var(--color-wasabi); }
+.marker-wasabi .pin-ring-glow { background: var(--color-wasabi); }
+
+.marker-polponero .pin-main { background: #121212; border-color: var(--color-polpo); color: var(--color-polpo); }
+.marker-polponero .pin-ring-glow { background: var(--color-polpo); }
+
+/* Estilos para los logos PNG y SVG en Pines, Popups y Ecosistema */
+.pin-logo-img, .pin-logo-svg {
+  width: 25px !important;
+  height: 25px !important;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.popup-badge-logo-img, .popup-badge-logo-svg {
+  width: 22px !important;
+  height: 22px !important;
+  object-fit: contain;
+  display: block;
+}
+
+.eco-brand-logo-img, .eco-brand-logo-svg {
+  width: 25px !important;
+  height: 25px !important;
+  object-fit: contain;
+  display: block;
+}
+
+/* ==========================================================================
+   9. OPTIMIZACIÓN RESPONSIVA Y "ZONA DEL PULGAR"
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .floating-header {
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: none;
+    gap: 8px;
+  }
+
+  .search-container {
+    padding: 4px 10px 4px 4px;
+    border-radius: 12px;
+  }
+
+  .search-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .search-logo img {
+    width: 20px;
+    height: 20px;
+  }
+
+  #search-input {
+    font-size: 0.82rem;
+    padding: 0 10px;
+  }
+
+  /* Filtros flotantes compactos en cuadrícula sin scroll */
+  .filters-scroll {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .filter-pill {
+    padding: 6px 2px;
+    font-size: 0.72rem;
+    border-radius: 10px;
+    gap: 3px;
+  }
+
+  .pill-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Controles flotantes compactos del pulgar */
+  .floating-controls {
+    bottom: 40px;
+    top: auto;
+    right: 12px;
+    gap: 8px;
+  }
+
+  .control-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .notification-badge {
+    width: 15px;
+    height: 15px;
+    font-size: 0.55rem;
+  }
+
+  /* REDUCCIÓN DE TAMAÑO DE POPUP LEAFLET EN MÓVIL (EVITA TRASLAPES) */
+  .leaflet-popup-content-wrapper {
+    width: 245px !important;
+    border-radius: 14px !important;
+  }
+
+  .popup-img-wrapper {
+    height: 85px !important;
+  }
+
+  .popup-body {
+    padding: 10px !important;
+    gap: 5px !important;
+  }
+
+  .popup-title {
+    font-size: 0.92rem !important;
+    color: var(--color-primary) !important; /* Título amarillo Fortress */
+  }
+
+  .popup-address {
+    font-size: 0.72rem !important;
+    gap: 4px !important;
+  }
+
+  .popup-desc {
+    font-size: 0.7rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Ocultar tags de servicios para achicar el popup enormemente */
+  .popup-services {
+    display: none !important;
+  }
+
+  .popup-schedule {
+    font-size: 0.65rem !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+  }
+
+  .popup-stats-grid {
+    padding: 4px 0 !important;
+    gap: 4px !important;
+  }
+
+  .popup-stat-val {
+    font-size: 0.72rem !important;
+  }
+
+  .popup-stat-lbl {
+    font-size: 0.58rem !important;
+  }
+
+  .popup-btn {
+    padding: 6px !important;
+    font-size: 0.72rem !important;
+    border-radius: 8px !important;
+    gap: 4px !important;
+  }
+
+  /* Panel inferior Timeline adaptado */
+  .bottom-expanded-bar {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    left: 50%;
+  }
+
+  .side-panel {
+    max-width: 100%;
+  }
+
+  .stats-container {
+    gap: 6px;
+  }
+
+  .stat-number {
+    font-size: 1.15rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+  }
+}

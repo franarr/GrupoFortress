@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mapa interactivo oficial de sedes de Grupo Fortress: Fortress Training Club, Krafit Center, Valhalla CrossFit y ecosistema de gastronomía y servicios en Santa Fe y la región.">
+  <title>Grupo Fortress - Mapa Interactivo de Sedes</title>
+
+  <!-- Google Fonts - Outfit & Syne -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha255-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha255-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 1. PANTALLA DE CARGA (SPLASH SCREEN) -->
+  <div id="splash-screen">
+    <div class="splash-content">
+      <!-- Animated SVG Logo of Fortress -->
+      <svg class="splash-logo-svg" viewBox="0 0 100 100" width="120" height="120">
+        <path class="ray-path" d="M35 15 L70 15 L50 48 L75 48 L30 85 L42 53 L25 53 Z" />
+      </svg>
+      <h1 class="splash-title">GRUPO FORTRESS</h1>
+      <p class="splash-subtitle">Cargando ecosistema de entrenamiento y bienestar...</p>
+      <div class="splash-loader">
+        <div class="loader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. CONTENEDOR PRINCIPAL DEL MAPA -->
+  <div id="map"></div>
+
+  <!-- 3. BARRA DE BÚSQUEDA FLOTANTE Y FILTROS (SUPERIOR) -->
+  <div class="floating-header">
+    <div class="search-container">
+      <div class="search-logo" id="toggle-ecosistema-btn" title="Ver Ecosistema Completo">
+        <!-- SVG Fortress Ray Logo Inside Search -->
+        <svg viewBox="0 0 100 100" width="24" height="24" class="search-logo-svg" style="color: #EA531D; fill: currentColor; display: block;">
+          <path d="M38 18 L68 18 L50 48 L70 48 L32 82 L42 53 L28 53 Z" />
+        </svg>
+      </div>
+      <input type="text" id="search-input" placeholder="Buscar sedes, dirección, ciudad o actividades..." autocomplete="off">
+      <button class="clear-search" id="clear-search-btn" title="Limpiar búsqueda" style="display: none;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quick Filters Pill list -->
+    <div class="filters-scroll">
+      <button class="filter-pill" data-brand="fortress">
+        <span class="pill-dot fortress-dot"></span>Fortress
+      </button>
+      <button class="filter-pill" data-brand="krafit">
+        <span class="pill-dot krafit-dot"></span>Krafit
+      </button>
+      <button class="filter-pill" data-brand="valhalla">
+        <span class="pill-dot valhalla-dot"></span>Valhalla
+      </button>
+      <button class="filter-pill" data-brand="gastro">
+        <span class="pill-dot gastro-dot"></span>Gastro
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. CONTROLES FLOTANTES LATERAL DERECHA (Thumb-friendly) -->
+  <div class="floating-controls">
+    <!-- Geolocation "Sede más cercana" -->
+    <button class="control-btn" id="geo-location-btn" title="Sede más cercana">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="3"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+      </svg>
+    </button>
+
+    <!-- Notification / Avisos bell icon -->
+    <button class="control-btn" id="notifications-toggle-btn" title="Notificaciones e Novedades">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+      <span class="notification-badge" id="noti-badge">3</span>
+    </button>
+
+    <!-- Map Style Toggle (Claro / Oscuro) -->
+    <button class="control-btn" id="theme-toggle-btn" title="Alternar estilo de mapa">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 5. PANEL DE NOTIFICACIONES E AVISOS (Desliza desde la Derecha) -->
+  <div class="side-panel right-side" id="notifications-panel">
+    <div class="panel-header">
+      <h2 class="panel-title">Notificaciones y Novedades</h2>
+      <button class="close-panel-btn" id="close-notifications-btn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="panel-content" id="notifications-list">
+      <!-- Will be populated dynamically via app.js -->
+    </div>
+  </div>
+
+  <!-- 6. PANEL LATERAL - EL ECOSISTEMA COMPLETO (Desliza desde la Izquierda) -->
+  <div class="side-panel left-side" id="ecosistema-panel">
+    <div class="panel-header">
+      <h2 class="panel-title">Ecosistema Grupo Fortress</h2>
+      <button class="close-panel-btn" id="close-ecosistema-btn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="panel-content">
+      <p class="ecosistema-intro">Conoce todas las marcas que componen nuestra red de entrenamiento, gastronomía y cuidado personal. Haz clic en las sedes físicas para ubicarlas en el mapa.</p>
+      
+      <div class="ecosistema-section">
+        <h3>Entrenamiento y Fuerza</h3>
+        <div class="ecosistema-grid" id="eco-fitness-grid">
+          <!-- Populated from data.js -->
+        </div>
+      </div>
+
+      <div class="ecosistema-section">
+        <h3>Gastronomía y Sabores</h3>
+        <div class="ecosistema-grid" id="eco-gastro-grid">
+          <!-- Populated from data.js -->
+        </div>
+      </div>
+
+      <div class="ecosistema-section">
+        <h3>Servicios y Estilo de Vida</h3>
+        <div class="ecosistema-grid" id="eco-servicios-grid">
+          <!-- Populated from data.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. PANEL INFERIOR - TIMELINE DE EXPANSIÓN Y CONTADORES (Fijo abajo, colapsable) -->
+  <div class="bottom-expanded-bar" id="timeline-bar">
+    <button class="timeline-toggle-handle" id="timeline-toggle-handle-btn" title="Ver Trayectoria">
+      <span class="handle-line"></span>
+    </button>
+    
+    <div class="bottom-bar-layout">
+      <!-- Animated Stats Counters -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number" id="stat-sedes">0</div>
+          <div class="stat-label">Sedes Activas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-socios" data-target="4000">+0</div>
+          <div class="stat-label">Socios Activos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-ciudades">0</div>
+          <div class="stat-label">Ciudades</div>
+        </div>
+      </div>
+
+      <!-- Expansion Slider Timeline -->
+      <div class="timeline-slider-container">
+        <h4 class="timeline-section-title">Nuestra Trayectoria de Crecimiento</h4>
+        <div class="timeline-wrapper">
+          <div class="timeline-track" id="timeline-track-content">
+            <!-- Will be populated dynamically via app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
