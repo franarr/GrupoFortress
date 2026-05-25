@@ -1339,29 +1339,29 @@ body, html {
    ========================================================================== */
 .custom-toast {
   position: fixed;
-  top: 90px; /* Posicionada elegantemente arriba, debajo del buscador flotante */
+  bottom: 30px;
   left: 50%;
-  transform: translate(-50%, -20px);
+  transform: translate(-50%, 20px);
   background: rgba(11, 12, 16, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-left: 4px solid var(--color-primary);
   color: var(--text-primary);
-  padding: 12px 20px;
+  padding: 12px 18px;
   border-radius: 14px;
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  z-index: 99999;
+  z-index: 9999;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px);
   opacity: 0;
   pointer-events: none;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-  width: 90%;
-  max-width: 380px;
+  width: 88%;
+  max-width: 360px;
 }
 
 .custom-toast.show {

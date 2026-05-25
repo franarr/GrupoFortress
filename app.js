@@ -588,28 +588,19 @@ document.addEventListener("DOMContentLoaded", () => {
           });
 
           if (closestSede) {
-            geoBtn.classList.add("accent"); // Encender indicador visual de geolocalización
-            // Dibujar círculo pulsante temporal de usuario
-            const userPulseCircle = L.circleMarker(userCoords, {
-              radius: 10,
-              fillColor: "#0288d1",
-              fillOpacity: 0.8,
-              color: "#ffffff",
-              weight: 3
-            }).addTo(map);
+            geoBtn.classList.add("accent");
 
-            // Centrar la cámara cubriendo ambos puntos o enfocando la sede
+            // Volar directamente a la sede más cercana y mostrar su popup
             flyToWithOffset(closestSede.coords, 16, { animate: true, duration: 1.5 });
             
             setTimeout(() => {
               focusOnSede(closestSede);
               showToast(`¡Ubicación activada! Sede más cercana: ${closestSede.name}`, "success");
               
-              // Remover indicador de pulso en 8 segundos
+              // Apagar indicador visual del botón después de 6 segundos
               setTimeout(() => {
-                map.removeLayer(userPulseCircle);
-                geoBtn.classList.remove("accent"); // Apagar indicador después de 8 segundos
-              }, 8000);
+                geoBtn.classList.remove("accent");
+              }, 6000);
             }, 1500);
           }
         },
