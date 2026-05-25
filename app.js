@@ -615,9 +615,17 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         (error) => {
           geoBtn.classList.remove("loading");
-          alert("No pudimos obtener tu ubicación actual. Por favor verifica tus permisos.");
+          let errorMsg = "No pudimos obtener tu ubicación actual.";
+          if (error.code === error.PERMISSION_DENIED) {
+            errorMsg += " El acceso a la ubicación fue denegado. Por favor, habilita los permisos de GPS/ubicación en tu navegador para esta página.";
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            errorMsg += " Tu GPS o señal de red no está disponible actualmente.";
+          } else if (error.code === error.TIMEOUT) {
+            errorMsg += " Se agotó el tiempo de espera. Inténtalo de nuevo.";
+          }
+          alert(errorMsg);
         },
-        { enableHighAccuracy: true, timeout: 5000 }
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
       );
     });
   }
